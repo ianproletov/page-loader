@@ -3,6 +3,7 @@ env:
     - CC_TEST_REPORTER_ID=ff55fd1bd56f509fb5354d12760a7607143ad9bbca8933dea6e85c41895b3063
 
 language: node_js
+
 node_js:
   - node
 
@@ -11,10 +12,10 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
-  script:
+script:
   - make lint
   - make test
   - make coverage
 
-  after_script:
+after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
