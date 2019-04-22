@@ -2,6 +2,10 @@ language: node_js
 node_js:
   - node
 
-script:
+addons:
+    code_climate:
+        repo_token: ff55fd1bd56f509fb5354d12760a7607143ad9bbca8933dea6e85c41895b3063
+
+  script:
   - make lint
   - make test
