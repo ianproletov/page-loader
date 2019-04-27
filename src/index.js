@@ -1,7 +1,7 @@
 import axios from 'axios';
 import path from 'path';
 import url from 'url';
-import { trimEnd } from 'lodash';
+import { trimStart, trimEnd } from 'lodash';
 import { promises as fs } from 'fs';
 import cheerio from 'cheerio';
 import httpAdapter from 'axios/lib/adapters/http';
@@ -19,15 +19,19 @@ let localContent;
 
 const types = {
   file: (pageAddress) => {
-    const urlAdd = url.parse(pageAddress);
-    const filename = `${urlAdd.host}${trimEnd(urlAdd.pathname, '/')}`.replace(/\W/g, '-');
+    const { host, pathname } = url.parse(pageAddress);
+    const filename = `${host}${trimEnd(pathname, '/')}`.replace(/\W/g, '-');
     return `${filename}.html`;
   },
   link: (pageAddress) => {
     const { dir, name, ext } = path.parse(pageAddress);
-    return path.join(dir, name).replace(/\W/g, '-').concat(ext);
+    return `${trimStart(path.join(dir, name), '/')}`.replace(/\W/g, '-').concat(`${ext}`);
   },
-  dir: pageAddress => types.file(pageAddress).replace(/\W/g, '-').concat('_files'),
+  dir: (pageAddress) => {
+    const urlAdd = url.parse(pageAddress);
+    const filename = `${urlAdd.host}${trimEnd(urlAdd.pathname, '/')}`.replace(/\W/g, '-');
+    return `${filename}_files`;
+  },
 };
 
 export const getName = (pageAddress, type) => types[type](pageAddress);
@@ -59,14 +63,16 @@ export default (pageAddress, outputpath) => {
       loadedLinks.forEach((link) => {
         const linkName = getName(link, 'link');
         const linkPath = path.join(linkDir, linkName);
-        absoluteLinkPath = path.join(outputpath, linkPath, linkName);
+        absoluteLinkPath = path.join(outputpath, linkPath);
         return axios.get(url.resolve(pageAddress, link))
-          .then(linkResponse => fs.writeFile(absoluteLinkPath, linkResponse.data));
+          .then(linkResponse => fs.writeFile(absoluteLinkPath, linkResponse.data))
+          .catch((error) => {
+            console.error(error.message);
+          });
       });
     })
     .then(() => fs.writeFile(filepath, localContent))
     .catch((error) => {
-      console.log('error');
-      throw new Error(error);
+      console.error(error.message);
     });
 };

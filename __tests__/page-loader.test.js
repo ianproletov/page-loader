@@ -20,13 +20,17 @@ describe.each([
 
 test('Download', async () => {
   const actualContentPath = './__tests__/__fixtures__/page-actual.html';
+  const linkContentPath = './__tests__/__fixtures__/application.txt';
   const expectedContentPath = './__tests__/__fixtures__/page-expected.html';
   nock('https://localhost')
-    .get('/page')
+    .get('/')
     .replyWithFile(200, actualContentPath, { 'Content-type': 'text/html' });
+  nock('https://localhost')
+    .get('/assets/application.js')
+    .replyWithFile(200, linkContentPath, { 'Content-type': 'text/html' });
   const outputDirPath = await fs.mkdtemp(`${os.tmpdir()}${path.sep}`);
-  await loadPage('https://localhost/page', outputDirPath);
-  const outputPath = path.join(outputDirPath, getName('https://localhost/page', 'file'));
+  await loadPage('https://localhost/', outputDirPath);
+  const outputPath = path.join(outputDirPath, getName('https://localhost/', 'file'));
   const outputResult = await fs.readFile(outputPath, 'utf-8');
   const expectedResult = await fs.readFile(expectedContentPath, 'utf-8');
   expect(outputResult).toBe(expectedResult);
