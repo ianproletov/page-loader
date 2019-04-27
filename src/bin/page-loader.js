@@ -4,7 +4,7 @@ import loadPage from '..';
 import program from 'commander';
 
 program
-  .version('0.0.3', '-V, --version')
+  .version('0.0.5', '-V, --version')
   .description('Usage: page-loader [options]')
   .description('Downloads the page content')
   .option('-o, --output [path]', 'Output directory path', process.cwd())

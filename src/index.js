@@ -14,9 +14,6 @@ const tags = {
   link: 'href',
 };
 
-const loadedLinks = [];
-let localContent;
-
 const types = {
   file: (pageAddress) => {
     const { host, pathname } = url.parse(pageAddress);
@@ -37,6 +34,8 @@ const types = {
 export const getName = (pageAddress, type) => types[type](pageAddress);
 
 export default (pageAddress, outputpath) => {
+  const loadedLinks = [];
+  let localContent;
   const filepath = path.join(outputpath, getName(pageAddress, 'file'));
   const linkDir = getName(pageAddress, 'dir');
   let absoluteLinkPath = '';
@@ -60,16 +59,16 @@ export default (pageAddress, outputpath) => {
       return fs.mkdir(path.join(outputpath, linkDir));
     })
     .then(() => {
-      loadedLinks.forEach((link) => {
-        const linkName = getName(link, 'link');
-        const linkPath = path.join(linkDir, linkName);
-        absoluteLinkPath = path.join(outputpath, linkPath);
-        return axios.get(url.resolve(pageAddress, link))
-          .then(linkResponse => fs.writeFile(absoluteLinkPath, linkResponse.data))
-          .catch((error) => {
-            console.error(error.message);
-          });
-      });
+      console.log(loadedLinks);
+      const linkPromises = loadedLinks.map(link => axios.get(url.resolve(pageAddress, link), { responseType: 'arraybuffer' })
+        .then((resp) => {
+          const linkName = getName(link, 'link');
+          const linkPath = path.join(linkDir, linkName);
+          absoluteLinkPath = path.join(outputpath, linkPath);
+          console.log(absoluteLinkPath);
+          return fs.writeFile(absoluteLinkPath, resp.data);
+        }));
+      return Promise.all(linkPromises);
     })
     .then(() => fs.writeFile(filepath, localContent))
     .catch((error) => {
