@@ -50,6 +50,7 @@
   "homepage": "https://github.com/ianproletov/project-lvl3-s418#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.3",
     "commander": "^2.19.0",
     "lodash": "^4.17.11",
     "url": "^0.11.0"
