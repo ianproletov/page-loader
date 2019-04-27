@@ -1,12 +1,15 @@
 import axios from 'axios';
 import path from 'path';
 import url from 'url';
+import debug from 'debug';
 import { trimStart, trimEnd } from 'lodash';
 import { promises as fs } from 'fs';
 import cheerio from 'cheerio';
 import httpAdapter from 'axios/lib/adapters/http';
 
 axios.defaults.adapter = httpAdapter;
+
+const worklog = debug('page-loader-ianproletov');
 
 const tags = {
   script: 'src',
@@ -25,8 +28,8 @@ const types = {
     return `${trimStart(path.join(dir, name), '/')}`.replace(/\W/g, '-').concat(`${ext}`);
   },
   dir: (pageAddress) => {
-    const urlAdd = url.parse(pageAddress);
-    const filename = `${urlAdd.host}${trimEnd(urlAdd.pathname, '/')}`.replace(/\W/g, '-');
+    const { host, pathname } = url.parse(pageAddress);
+    const filename = `${host}${trimEnd(pathname, '/')}`.replace(/\W/g, '-');
     return `${filename}_files`;
   },
 };
@@ -39,6 +42,8 @@ export default (pageAddress, outputpath) => {
   const filepath = path.join(outputpath, getName(pageAddress, 'file'));
   const linkDir = getName(pageAddress, 'dir');
   let absoluteLinkPath = '';
+  worklog(pageAddress);
+  worklog(`to ${outputpath}`);
   return axios.get(pageAddress)
     .then((response) => {
       const $ = cheerio.load(response.data);
