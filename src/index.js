@@ -59,13 +59,11 @@ export default (pageAddress, outputpath) => {
       return fs.mkdir(path.join(outputpath, linkDir));
     })
     .then(() => {
-      console.log(loadedLinks);
       const linkPromises = loadedLinks.map(link => axios.get(url.resolve(pageAddress, link), { responseType: 'arraybuffer' })
         .then((resp) => {
           const linkName = getName(link, 'link');
           const linkPath = path.join(linkDir, linkName);
           absoluteLinkPath = path.join(outputpath, linkPath);
-          console.log(absoluteLinkPath);
           return fs.writeFile(absoluteLinkPath, resp.data);
         }));
       return Promise.all(linkPromises);

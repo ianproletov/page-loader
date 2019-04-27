@@ -11,3 +11,5 @@
 
 ## Install and usage:
 <a href="https://asciinema.org/a/242265" target="_blank"><img src="https://asciinema.org/a/242265.svg" /></a>
+
+## Install and downloading links

@@ -27,7 +27,7 @@ test('Download', async () => {
   const actualContent = await fs.readFile(actualContentPath, 'utf-8');
   const scriptContent = await fs.readFile(scriptContentPath, 'utf-8');
   const styleContent = await fs.readFile(styleContentPath, 'utf-8');
-  const imageContent = await fs.readFile(imageContentPath);
+  const imageContent = await fs.readFile(imageContentPath, 'utf-8');
 
   nock('https://localhost')
     .get('/page')
