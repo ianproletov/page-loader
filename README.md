@@ -14,3 +14,6 @@
 
 ## Install and downloading links:
 <a href="https://asciinema.org/a/243189" target="_blank"><img src="https://asciinema.org/a/243189.svg" /></a>
+
+## Debug logs demo:
+<a href="https://asciinema.org/a/243241" target="_blank"><img src="https://asciinema.org/a/243241.svg" /></a>

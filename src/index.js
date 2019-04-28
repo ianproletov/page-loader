@@ -9,7 +9,10 @@ import httpAdapter from 'axios/lib/adapters/http';
 
 axios.defaults.adapter = httpAdapter;
 
-const worklog = debug('page-loader-ianproletov');
+const loadlog = debug('page-loader:download');
+const getlog = debug('page-loader:get');
+const createlog = debug('page-loader:create');
+
 
 const tags = {
   script: 'src',
@@ -18,20 +21,16 @@ const tags = {
 };
 
 const types = {
-  file: (pageAddress) => {
+  main: (pageAddress) => {
     const { host, pathname } = url.parse(pageAddress);
-    const filename = `${host}${trimEnd(pathname, '/')}`.replace(/\W/g, '-');
-    return `${filename}.html`;
+    return `${host}${trimEnd(pathname, '/')}`.replace(/\W/g, '-');
   },
+  file: pageAddress => `${types.main(pageAddress)}.html`,
   link: (pageAddress) => {
     const { dir, name, ext } = path.parse(pageAddress);
     return `${trimStart(path.join(dir, name), '/')}`.replace(/\W/g, '-').concat(`${ext}`);
   },
-  dir: (pageAddress) => {
-    const { host, pathname } = url.parse(pageAddress);
-    const filename = `${host}${trimEnd(pathname, '/')}`.replace(/\W/g, '-');
-    return `${filename}_files`;
-  },
+  dir: pageAddress => `${types.main(pageAddress)}_files`,
 };
 
 export const getName = (pageAddress, type) => types[type](pageAddress);
@@ -42,10 +41,10 @@ export default (pageAddress, outputpath) => {
   const filepath = path.join(outputpath, getName(pageAddress, 'file'));
   const linkDir = getName(pageAddress, 'dir');
   let absoluteLinkPath = '';
-  worklog(pageAddress);
-  worklog(`to ${outputpath}`);
   return axios.get(pageAddress)
     .then((response) => {
+      getlog('response from', pageAddress);
+      loadlog('to ', outputpath);
       const $ = cheerio.load(response.data);
       const listOfTags = Object.keys(tags);
       listOfTags.forEach((tag) => {
@@ -57,10 +56,12 @@ export default (pageAddress, outputpath) => {
             const linkPath = path.join(linkDir, linkName);
             loadedLinks.push(link);
             $(currentTag).attr(attribute, linkPath);
+            getlog('link: ', link);
           }
         });
       });
       localContent = $.html();
+      createlog('directory for downloading page content: ', path.join(outputpath, linkDir));
       return fs.mkdir(path.join(outputpath, linkDir));
     })
     .then(() => {
@@ -69,11 +70,15 @@ export default (pageAddress, outputpath) => {
           const linkName = getName(link, 'link');
           const linkPath = path.join(linkDir, linkName);
           absoluteLinkPath = path.join(outputpath, linkPath);
+          loadlog(`${link} content to ${absoluteLinkPath}`);
           return fs.writeFile(absoluteLinkPath, resp.data);
         }));
       return Promise.all(linkPromises);
     })
-    .then(() => fs.writeFile(filepath, localContent))
+    .then(() => {
+      loadlog('page to: ', filepath);
+      return fs.writeFile(filepath, localContent);
+    })
     .catch((error) => {
       console.error(error.message);
     });
