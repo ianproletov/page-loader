@@ -72,6 +72,9 @@ export default (pageAddress, outputpath) => {
           absoluteLinkPath = path.join(outputpath, linkPath);
           loadlog(`${link} content to ${absoluteLinkPath}`);
           return fs.writeFile(absoluteLinkPath, resp.data);
+        })
+        .catch((error) => {
+          throw new Error(error.message);
         }));
       return Promise.all(linkPromises);
     })
@@ -80,6 +83,6 @@ export default (pageAddress, outputpath) => {
       return fs.writeFile(filepath, localContent);
     })
     .catch((error) => {
-      console.error(error.message);
+      throw new Error(error.message);
     });
 };

@@ -5,7 +5,7 @@ publish:
 build:
 	npm run build
 start:
-	npx babel-node src/bin/page-loader.js --output __tests__ https://hexlet.io
+	npx babel-node src/bin/page-loader.js --output __tests__ https://hexxlet.io
 help:
 	npx babel-node src/bin/page-loader.js --help
 lint:

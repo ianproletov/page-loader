@@ -10,5 +10,10 @@ program
   .description('Downloads the page content')
   .option('-o, --output [path]', 'Output directory path', process.cwd())
   .arguments('<pageAddress>')
-  .action(pageAddress => loadPage(pageAddress, program.output));
+  .action(pageAddress => loadPage(pageAddress, program.output)
+    .then(filename => console.log(`${pageAddress} downloaded to ${program.output} as ${filename}`))
+    .catch((error) => {
+      console.error(error.message);
+      process.exit(1);
+    }));
 program.parse(process.argv);

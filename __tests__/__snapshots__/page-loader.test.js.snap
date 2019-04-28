@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Errors Wrong directory 1`] = `"received is not a function"`;
+
+exports[`Errors Wrong link in main file 1`] = `"received is not a function"`;
+
+exports[`Errors Wrong page address 1`] = `"received is not a function"`;

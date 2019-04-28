@@ -59,3 +59,35 @@ test('Download', async () => {
   expect(receivedImage).toBe(imageContent);
   expect(receivedStyle).toBe(styleContent);
 });
+
+describe('Errors', () => {
+  test('Wrong directory', async () => {
+    const wrongDirPath = '/wrong/wrong/wrong';
+    try {
+      await loadPage('https://hexlet.io', wrongDirPath);
+    } catch (error) {
+      expect(error).toThrowErrorMatchingSnapshot();
+    }
+  });
+  test('Wrong page address', async () => {
+    const tmpDirPath = await fs.mkdtemp(`${os.tmpdir()}${path.sep}`);
+    try {
+      await loadPage('https://hexxlet.io', tmpDirPath);
+    } catch (error) {
+      expect(error).toThrowErrorMatchingSnapshot();
+    }
+  });
+  test('Wrong link in main file', async () => {
+    const wrongHTMLPath = './__tests__/__fixtures__/wrong.html';
+    const wrongContent = await fs.readFile(wrongHTMLPath, 'utf-8');
+    const tmpDirPath = await fs.mkdtemp(`${os.tmpdir()}${path.sep}`);
+    nock('https://localhost')
+      .get('/page')
+      .reply(200, wrongContent);
+    try {
+      await loadPage('https://localhost/wrong', tmpDirPath);
+    } catch (error) {
+      expect(error).toThrowErrorMatchingSnapshot();
+    }
+  });
+});
