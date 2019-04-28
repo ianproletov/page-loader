@@ -17,3 +17,6 @@
 
 ## Debug logs demo:
 <a href="https://asciinema.org/a/243241" target="_blank"><img src="https://asciinema.org/a/243241.svg" /></a>
+
+## Errors demo:
+<a href="https://asciinema.org/a/243285" target="_blank"><img src="https://asciinema.org/a/243285.svg" /></a>
