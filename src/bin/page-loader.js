@@ -11,7 +11,7 @@ program
   .option('-o, --output [path]', 'Output directory path', process.cwd())
   .arguments('<pageAddress>')
   .action(pageAddress => loadPage(pageAddress, program.output)
-    .then(filename => console.log(`${pageAddress} downloaded to ${program.output} as ${filename}`))
+    .then(() => console.log(`${pageAddress} downloaded to ${program.output}`))
     .catch((error) => {
       console.error(error.message);
       process.exit(1);

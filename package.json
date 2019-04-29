@@ -1,6 +1,6 @@
 {
   "name": "page-loader-ianproletov",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "my third hexlet project",
   "main": "dist/index.js",
   "bin": {
