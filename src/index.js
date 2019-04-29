@@ -2,6 +2,7 @@ import axios from 'axios';
 import path from 'path';
 import url from 'url';
 import debug from 'debug';
+import Listr from 'listr';
 import { trimStart, trimEnd } from 'lodash';
 import { promises as fs } from 'fs';
 import cheerio from 'cheerio';
@@ -65,18 +66,22 @@ export default (pageAddress, outputpath) => {
       return fs.mkdir(path.join(outputpath, linkDir));
     })
     .then(() => {
-      const linkPromises = loadedLinks.map(link => axios.get(url.resolve(pageAddress, link), { responseType: 'arraybuffer' })
-        .then((resp) => {
-          const linkName = getName(link, 'link');
-          const linkPath = path.join(linkDir, linkName);
-          absoluteLinkPath = path.join(outputpath, linkPath);
-          loadlog(`${link} content to ${absoluteLinkPath}`);
-          return fs.writeFile(absoluteLinkPath, resp.data);
-        })
-        .catch((error) => {
-          throw new Error(error.message);
-        }));
-      return Promise.all(linkPromises);
+      const tasks = new Listr(loadedLinks.map(link => ({
+        title: `downloading ${link}`,
+        task: () => axios.get(url.resolve(pageAddress, link), { responseType: 'arraybuffer' })
+          .then((resp) => {
+            const linkName = getName(link, 'link');
+            const linkPath = path.join(linkDir, linkName);
+            absoluteLinkPath = path.join(outputpath, linkPath);
+            loadlog(`${link} content to ${absoluteLinkPath}`);
+            return fs.writeFile(absoluteLinkPath, resp.data);
+          })
+          .catch((error) => {
+            throw new Error(error.message);
+          }),
+      })));
+
+      return tasks.run();
     })
     .then(() => {
       loadlog('page to: ', filepath);
