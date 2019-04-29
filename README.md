@@ -20,3 +20,6 @@
 
 ## Errors demo:
 <a href="https://asciinema.org/a/243285" target="_blank"><img src="https://asciinema.org/a/243285.svg" /></a>
+
+## Spinners demo:
+<a href="https://asciinema.org/a/243434" target="_blank"><img src="https://asciinema.org/a/243434.svg" /></a>
