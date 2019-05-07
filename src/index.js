@@ -36,6 +36,8 @@ const types = {
 
 export const getName = (pageAddress, type) => types[type](pageAddress);
 
+const getDOMContent = data => cheerio.load(data);
+
 export default (pageAddress, outputpath) => {
   const loadedLinks = [];
   let localContent;
@@ -46,7 +48,7 @@ export default (pageAddress, outputpath) => {
     .then((response) => {
       getlog('response from', pageAddress);
       loadlog('to ', outputpath);
-      const $ = cheerio.load(response.data);
+      const $ = getDOMContent(response.data);
       const listOfTags = Object.keys(tags);
       listOfTags.forEach((tag) => {
         const attribute = tags[tag];
@@ -77,9 +79,10 @@ export default (pageAddress, outputpath) => {
             return fs.writeFile(absoluteLinkPath, resp.data);
           })
           .catch((error) => {
-            throw new Error(error.message);
+            const message = `The error occured: ${error.message}`;
+            throw new Error(message);
           }),
-      })));
+      })), { concurrent: true });
 
       return tasks.run();
     })
@@ -88,6 +91,7 @@ export default (pageAddress, outputpath) => {
       return fs.writeFile(filepath, localContent);
     })
     .catch((error) => {
-      throw new Error(error.message);
+      const message = `The error occured: ${error.message}`;
+      throw new Error(message);
     });
 };

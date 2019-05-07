@@ -27,7 +27,7 @@ test('Download', async () => {
   const actualContent = await fs.readFile(actualContentPath, 'utf-8');
   const scriptContent = await fs.readFile(scriptContentPath, 'utf-8');
   const styleContent = await fs.readFile(styleContentPath, 'utf-8');
-  const imageContent = await fs.readFile(imageContentPath, 'utf-8');
+  const imageContent = await fs.readFile(imageContentPath);
 
   nock('https://localhost')
     .get('/page')
@@ -50,13 +50,13 @@ test('Download', async () => {
   const stylePath = path.join(tmpDirPath, 'localhost-page_files/assets-style.css');
 
   const receivedApp = await fs.readFile(appPath, 'utf-8');
-  const receivedImage = await fs.readFile(imagePath, 'utf-8');
+  const receivedImage = await fs.readFile(imagePath);
   const receivedStyle = await fs.readFile(stylePath, 'utf-8');
 
 
   expect(outputResult).toBe(expectedResult);
   expect(receivedApp).toBe(scriptContent);
-  expect(receivedImage).toBe(imageContent);
+  expect(receivedImage).toEqual(imageContent);
   expect(receivedStyle).toBe(styleContent);
 });
 
