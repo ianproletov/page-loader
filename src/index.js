@@ -49,6 +49,7 @@ export default (pageAddress, outputpath) => {
       getlog('response from', pageAddress);
       loadlog('to ', outputpath);
       const $ = getDOMContent(response.data);
+      $('base').remove();
       const listOfTags = Object.keys(tags);
       listOfTags.forEach((tag) => {
         const attribute = tags[tag];
@@ -77,10 +78,6 @@ export default (pageAddress, outputpath) => {
             absoluteLinkPath = path.join(outputpath, linkPath);
             loadlog(`${link} content to ${absoluteLinkPath}`);
             return fs.writeFile(absoluteLinkPath, resp.data);
-          })
-          .catch((error) => {
-            const message = `The error occured: ${error.message}`;
-            throw new Error(message);
           }),
       })), { concurrent: true });
 
